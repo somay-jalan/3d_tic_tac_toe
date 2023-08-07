@@ -106,28 +106,40 @@ ax.set_xlim3d(0, 5) #set the plot ranges
 ax.set_ylim3d(0, 5)
 ax.set_zlim3d(0, 5)
 try_again=True
-club_3d=list()
+cube_3d=list()
 for i in range(0,3):
     tempk=[]
     for j in range(0,3):
         tempj=["-","-","-"]
         tempk.append(tempj)
-    club_3d.append(tempk)
-print(club_3d)
-
-             
+    cube_3d.append(tempk)
+print(cube_3d)
+turn=0
 while try_again:
     user_input=input("Enter your play:")
     if(user_input=="quit"):
          try_again=False
     user_input=user_input.split(",")
-    
-    X=[[int(user_input[0])*2]]
-    Y=[[int(user_input[1])*2]]
-    Z=[[int(user_input[2])*2]]
-    if(int(user_input[3])==0):
+    for i in range(0,3):
+        user_input[i]=int(user_input[i])
+    if(user_input[0]>2 | user_input[1]>2 | user_input [2]>2):
+        print("try again wrong input")
+        break
+    if(cube_3d[user_input[0]][user_input[1]][user_input[2]]!="-"):
+        print("cube already colored")
+    else:
+        cube_3d[user_input[0]][user_input[1]][user_input[2]]=turn
+    print(cube_3d)
+    X=[[(user_input[0])*2]]
+    Y=[[(user_input[1])*2]]
+    Z=[[(user_input[2])*2]]
+    if(turn==0):
         plotter3D(X,Y,Z,sizes,"red")
     else:
-         plotter3D(X,Y,Z,sizes,"blue")    
+         plotter3D(X,Y,Z,sizes,"blue")   
+    if(turn==1):
+        turn=0
+    else:
+        turn=1 
     plt.pause(0.05)
 plt.show()
