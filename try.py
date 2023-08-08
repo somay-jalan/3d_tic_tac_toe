@@ -77,8 +77,25 @@ from matplotlib.backend_bases import MouseButton
 cmap = plt.get_cmap('spring') #define the colors of the plot 
 colors = [cmap(i) for i in np.linspace(0.1, 0.9, 5+1)]  
 
+def check_exist(i,j,k):
+    if 0<=i<=2 and 0<=j<=2 and 0<=k<=2:
+        return True
+    else:
+        return False
 
-
+def check_3d_cube(cube_3d,turn):
+    exists=list()
+    for i in range(0,3):
+        for j in range(0,3):
+            for k in range(0,3):
+                if cube_3d[i][j][k]==turn:
+                    if(check_exist(i-1,j,k)):
+                        if(cube_3d[i-1][j][k]==turn):
+                            if(check_exist(i-2,j,k)):
+                                if(cube_3d[i-2][j][k]==turn):
+                                    exists.append(i)
+                                    exists.append(j)
+                                    exists.append(k)
 
 
 def cube(a,b,c,l,color): #plots a cube of side l at (a,b,c)  
