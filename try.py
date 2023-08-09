@@ -93,9 +93,20 @@ def check_3d_cube(cube_3d,turn):
                         if(cube_3d[i-1][j][k]==turn):
                             if(check_exist(i-2,j,k)):
                                 if(cube_3d[i-2][j][k]==turn):
-                                    exists.append(i)
-                                    exists.append(j)
-                                    exists.append(k)
+                                    exists.append([i,j,k])
+                                    exists.append([i-2,j,k])
+                    if(check_exist(i,j-1,k)):
+                        if(cube_3d[i][j-1][k]==turn):
+                            if(check_exist(i,j-2,k)):
+                                if(cube_3d[i][j-2][k]==turn):
+                                    exists.append([i,j,k])
+                                    exists.append([i,j-2,k])
+                    if(check_exist(i,j,k-1)):
+                        if(cube_3d[i][j][k-1]==turn):
+                            if(check_exist(i,j,k-2)):
+                                if(cube_3d[i][j][k-2]==turn):
+                                    exists.append([i,j,k])
+                                    exists.append([i,j,k-2])
 
 
 def cube(a,b,c,l,color): #plots a cube of side l at (a,b,c)  
@@ -145,6 +156,9 @@ while try_again:
     if(user_input=="quit"):
         try_again=False
     user_input=list(user_input)
+    if(len(user_input)<3):
+        print("wrong input")
+        continue
     for i in range(0,3):
         user_input[i]=int(user_input[i])
     # print(user_input[0]>2,user_input[1]>2,user_input[2]>2)
