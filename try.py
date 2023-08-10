@@ -7,8 +7,7 @@ from matplotlib.patches import Rectangle, PathPatch
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D 
 import mpl_toolkits.mplot3d.art3d as art3d
-from matplotlib.backend_bases import MouseButton
-
+from matplotlib.widgets import TextBox
 cmap = plt.get_cmap('spring') #define the colors of the plot 
 colors = [cmap(i) for i in np.linspace(0.1, 0.9, 5+1)]  
 
@@ -115,6 +114,53 @@ def plotter3D(X,Y,Z,sizes,color): #run cube(a,b,c,l) over the whole data set
         z = Z[iX]
         for ix in range(len(x)): 
             cube(x[ix],y[ix],z[ix],sizes[iX],color)
+turn=0
+exists=list()
+def game(user_input):
+    global turn,exists
+    if(len(exists)<2):
+        if(user_input==""):
+            return False
+        if(user_input=="quit"):
+            return False
+        if(user_input.isnumeric()==False):
+            print("wrong input1")
+            return False
+        user_input=list(user_input)
+        if(len(user_input)<3):
+            print("wrong input2")
+            return False
+        for i in range(0,3):
+            user_input[i]=int(user_input[i])
+        if(user_input[0]>2 or user_input[1]>2 or user_input [2]>2):
+            print("try again wrong input")
+            return False
+        if(cube_3d[user_input[0]][user_input[1]][user_input[2]]!="-"):
+            print("cube already colored")
+            return False
+        else:
+            cube_3d[user_input[0]][user_input[1]][user_input[2]]=turn
+        print(cube_3d)
+        X=[[(user_input[0])*3]]
+        Y=[[(user_input[1])*3]]
+        Z=[[(user_input[2])*3]]
+        if(turn==0):
+            plotter3D(X,Y,Z,sizes,"red")
+        else:
+            plotter3D(X,Y,Z,sizes,"blue")   
+        exists=check_3d_cube(cube_3d,turn)
+        print(exists)
+        if(len(exists)>=2):
+            for i in range(0,len(exists),2):
+                ax.plot([exists[i][0]+0.5,exists[i+1][0]+0.5],[exists[i][1]+0.5,exists[i+1][1]+0.5],[exists[i][2]+0.5,exists[i+1][2]+0.5],linewidth=5,color="black")
+                ax.text(3,3,10, 'Game over', style='italic',
+                    bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
+        if(turn==1):
+            turn=0
+        else:
+            turn=1 
+        plt.pause(0.05)
+        return True
 
 X=[[0,3,6,0,0,3,3,6,6],[0,3,6,0,0,3,3,6,6],[0,3,6,0,0,3,3,6,6]]
 Y=[[0,0,0,3,6,3,6,3,6],[0,0,0,3,6,3,6,3,6],[0,0,0,3,6,3,6,3,6]]
@@ -124,12 +170,21 @@ sizes=[1,1,1,1,1,1,1,1,1]
 fig = plt.figure() #open a figure 
 ax=fig.add_subplot(projection='3d') #make it 3d 
 plotter3D(X,Y,Z,sizes,"pink") #generate the cubes from the data set 
+for i in range(0,3):
+    for j in range(0,3):
+        for k in range(0,3):
+            ax.text(i*3+0.25,j*3+0.25,k*3+1.25,str(i)+str(j)+str(k),fontweight ='extra bold')
+
 ax.set_xlim3d(0, 7) #set the plot ranges 
 ax.set_ylim3d(0, 7)
 ax.set_zlim3d(0, 7)
 ax.set_xlabel('X axis')
 ax.set_ylabel('Y axis')
 ax.set_zlabel('Z axis')
+ax.axes.xaxis.set_ticks([])
+ax.axes.yaxis.set_ticks([])
+ax.axes.xaxis.set_ticks([])
+ax.axes.zaxis.set_ticks([])
 try_again=True
 cube_3d=list()
 for i in range(0,3):
@@ -139,52 +194,10 @@ for i in range(0,3):
         tempk.append(tempj)
     cube_3d.append(tempk)
 print(cube_3d)
-plt.pause(0.05)
-turn=0
 exists=check_3d_cube(cube_3d,turn)
-while try_again:
-    user_input=input("Enter your play:")
-    if(user_input=="quit"):
-        try_again=False
-    if(user_input.isnumeric()==False):
-        print("wrong input1")
-        continue
-    user_input=list(user_input)
-    if(len(user_input)<3):
-        print("wrong input2")
-        continue
-    for i in range(0,3):
-        user_input[i]=int(user_input[i])
-    # print(user_input[0]>2,user_input[1]>2,user_input[2]>2)
-    # print(user_input[0]>2 or user_input[1]>2 or user_input [2]>2)
-
-    if(user_input[0]>2 or user_input[1]>2 or user_input [2]>2):
-        print("try again wrong input")
-        continue
-    if(cube_3d[user_input[0]][user_input[1]][user_input[2]]!="-"):
-        print("cube already colored")
-        continue
-    else:
-        cube_3d[user_input[0]][user_input[1]][user_input[2]]=turn
-    print(cube_3d)
-    X=[[(user_input[0])*3]]
-    Y=[[(user_input[1])*3]]
-    Z=[[(user_input[2])*3]]
-    if(turn==0):
-        plotter3D(X,Y,Z,sizes,"red")
-    else:
-         plotter3D(X,Y,Z,sizes,"blue")   
-    exists=check_3d_cube(cube_3d,turn)
-    print(exists)
-    if(len(exists)>=2):
-        for i in range(0,len(exists),2):
-            ax.plot([exists[i][0]+0.5,exists[i+1][0]+0.5],[exists[i][1]+0.5,exists[i+1][1]+0.5],[exists[i][2]+0.5,exists[i+1][2]+0.5],linewidth=5,color="black")
-            ax.text(3,3,10, 'Game over', style='italic',
-                bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
-        break
-    if(turn==1):
-        turn=0
-    else:
-        turn=1 
-    plt.pause(0.05)
+graphBox = fig.add_axes([0.1, 0.05, 0.1, 0.075])
+txtBox = TextBox(graphBox, "Plot: ")
+plt.pause(0.05)
+try_again=txtBox.on_submit(game)
+txtBox.set_val("")  
 plt.show()
