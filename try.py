@@ -8,6 +8,11 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D 
 import mpl_toolkits.mplot3d.art3d as art3d
 from matplotlib.widgets import TextBox
+from matplotlib.widgets import Button
+import os,signal
+import sys
+import psutil
+import logging
 cmap = plt.get_cmap('spring') #define the colors of the plot 
 colors = [cmap(i) for i in np.linspace(0.1, 0.9, 5+1)]  
 
@@ -106,6 +111,10 @@ def cube(a,b,c,l,color): #plots a cube of side l at (a,b,c)
                 side = Rectangle((xdire[i],ydire[i]),height=1,width=1,edgecolor='black',facecolor=color,alpha=0.5)
                 ax.add_patch(side)
                 art3d.pathpatch_2d_to_3d(side, z=zdire[i]+ll, zdir=dire[i])
+X=[[0,3,6,0,0,3,3,6,6],[0,3,6,0,0,3,3,6,6],[0,3,6,0,0,3,3,6,6]]
+Y=[[0,0,0,3,6,3,6,3,6],[0,0,0,3,6,3,6,3,6],[0,0,0,3,6,3,6,3,6]]
+Z=[[0,0,0,0,0,0,0,0,0],[3,3,3,3,3,3,3,3,3],[6,6,6,6,6,6,6,6,6]]
+sizes=[1,1,1,1,1,1,1,1,1]
 
 def plotter3D(X,Y,Z,sizes,color): #run cube(a,b,c,l) over the whole data set 
     for iX in range(len(X)):
@@ -116,6 +125,23 @@ def plotter3D(X,Y,Z,sizes,color): #run cube(a,b,c,l) over the whole data set
             cube(x[ix],y[ix],z[ix],sizes[iX],color)
 turn=0
 exists=list()
+cube_3d=list()
+def restart_program():
+    """Restarts the current program, with file objects and descriptors
+       cleanup
+    """
+    try:
+        p = psutil.Process(os.getpid())
+        for handler in p.get_open_files() + p.connections():
+            os.close(handler.fd)
+    except Exception as e:
+        logging.error(e)
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
+
+def playagain(event):
+    plt.close()
+    restart_program()
 def game(user_input):
     global turn,exists
     if(len(exists)<2):
@@ -155,17 +181,14 @@ def game(user_input):
                 ax.plot([exists[i][0]+0.5,exists[i+1][0]+0.5],[exists[i][1]+0.5,exists[i+1][1]+0.5],[exists[i][2]+0.5,exists[i+1][2]+0.5],linewidth=5,color="black")
                 ax.text(3,3,10, 'Game over', style='italic',
                     bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
+
+                
         if(turn==1):
             turn=0
         else:
             turn=1 
         plt.pause(0.05)
         return True
-
-X=[[0,3,6,0,0,3,3,6,6],[0,3,6,0,0,3,3,6,6],[0,3,6,0,0,3,3,6,6]]
-Y=[[0,0,0,3,6,3,6,3,6],[0,0,0,3,6,3,6,3,6],[0,0,0,3,6,3,6,3,6]]
-Z=[[0,0,0,0,0,0,0,0,0],[3,3,3,3,3,3,3,3,3],[6,6,6,6,6,6,6,6,6]]
-sizes=[1,1,1,1,1,1,1,1,1]
 
 fig = plt.figure() #open a figure 
 ax=fig.add_subplot(projection='3d') #make it 3d 
@@ -186,7 +209,6 @@ ax.axes.yaxis.set_ticks([])
 ax.axes.xaxis.set_ticks([])
 ax.axes.zaxis.set_ticks([])
 try_again=True
-cube_3d=list()
 for i in range(0,3):
     tempk=[]
     for j in range(0,3):
@@ -196,8 +218,13 @@ for i in range(0,3):
 print(cube_3d)
 exists=check_3d_cube(cube_3d,turn)
 graphBox = fig.add_axes([0.1, 0.05, 0.1, 0.075])
-txtBox = TextBox(graphBox, "Plot: ")
+txtBox = TextBox(graphBox, "Input: ")
 plt.pause(0.05)
 try_again=txtBox.on_submit(game)
 txtBox.set_val("")  
+axButn3 = plt.axes([0.5, 0.05, 0.3, 0.075])
+btn3 = Button(
+axButn3, label="Play Again", color='pink', hovercolor='tomato')
+btn3.on_clicked(playagain)
+plt.pause(0.05)
 plt.show()
