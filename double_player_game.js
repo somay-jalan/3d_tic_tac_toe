@@ -1,6 +1,6 @@
-import * as THREE from 'three';
-import Stats from 'three/addons/libs/stats.module.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import {OrbitControls} from 'https://unpkg.com/three@0.127.0/examples/jsm/controls/OrbitControls.js'
+import * as THREE from 'https://unpkg.com/three@0.127.0/build/three.module.js';
+import Stats from 'https://unpkg.com/stats-js@1.0.1/build/stats.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
