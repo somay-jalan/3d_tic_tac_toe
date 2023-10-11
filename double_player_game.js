@@ -1,6 +1,5 @@
-import * as THREE from 'three';
-import Stats from 'three/addons/libs/stats.module.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import {OrbitControls} from 'https://unpkg.com/three@0.127.0/examples/jsm/controls/OrbitControls.js'
+import * as THREE from 'https://unpkg.com/three@0.127.0/build/three.module.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -170,7 +169,7 @@ function check_3d_cube(cube_3d, turn) {
 }
 
 let turn;
-turn = Math.floor(Math.random() * 2);
+turn = 0;
 const controls = new OrbitControls(camera, renderer.domElement);
 var cube = [];
 var cube_3d = [];
@@ -215,9 +214,9 @@ for (let i = 0; i < 3; i++) {
 camera.position.x = 2.5;
 camera.position.y = 2.5;
 camera.position.z = 2.5;
-let stats;
-stats = new Stats();
-document.body.appendChild(stats.dom);
+// let stats;
+// stats = new Stats();
+// document.body.appendChild(stats.dom);
 
 window.addEventListener('resize', onWindowResize, false)
 function onWindowResize() {
@@ -234,73 +233,29 @@ buttonRestart.addEventListener('click', function () {
 });
 const buttonMenu = document.getElementById('back_menu');
 buttonMenu.addEventListener('click', function () {
-    window.location.href="/index.html";
+    window.location.href="/3d_tic_tac_toe/";
 
 });
-function computer_turn(){    //computer turn
-
-    let end,new_x,new_y,new_z;
-    end=0;
-    document.removeEventListener('click', onMouseClick, false);
-    while(true){
-        new_x=Math.floor(Math.random() * 3);
-        new_y=Math.floor(Math.random() * 3);
-        new_z=Math.floor(Math.random() * 3);
-        console.log(new_x,new_y,new_z);
-        if(cube_3d[new_x][new_y][new_z]=='-'){
-            break;
-        }
-    }
-    cube_3d[new_x][new_y][new_z]=turn;
-    const selectedCube=cube[new_x*9+new_y*3+new_z];
-    const newMaterial = new THREE.MeshLambertMaterial({ color: 0x0000ff });
+const buttonUndo = document.getElementById('undo');
+buttonUndo.addEventListener('click', function () {
+    cube_3d[selectedCube.position.x + 1][selectedCube.position.y + 1][selectedCube.position.z + 1] = "-";
+    const newMaterial = new THREE.MeshLambertMaterial({ color: 0x00ffff });
     newMaterial.transparent = true;
     newMaterial.opacity = 0.5;
     selectedCube.material = newMaterial;
-    const exists = (check_3d_cube(cube_3d, turn));
-    console.log(exists)
-    if (exists.length != 0) {
-        for (let i = 0; i < exists.length; i = i + 2) {
-            const material = new THREE.LineBasicMaterial({ color: 0x0000ff });
-            material.linewidth = 5;
-            const points = [];
-            points.push(new THREE.Vector3(exists[i][0] - 1, exists[i][1] - 1, exists[i][2] - 1));
-            points.push(new THREE.Vector3(exists[i + 1][0] - 1, exists[i + 1][1] - 1, exists[i + 1][2] - 1));
-            const geometry = new THREE.BufferGeometry().setFromPoints(points);
-            const line = new THREE.Line(geometry, material);
-            scene.add(line);
-            document.removeEventListener('click', onMouseClick, false);
-            const winner=document.createElement('h1');
-            if(turn==0){
-                winner.textContent="COMPUTER WON";
-            }else{
-                winner.textContent="YOU WON";
-            }
-            const gameover =document.getElementsByClassName("gameover")[0];
-            gameover.appendChild(winner);
-            gameover.classList.add("gameovervis");
-            if(turn==0){
-                gameover.style.backgroundColor = "rgba(156, 159, 251, 0.5)";
-
-            }
-            end=1;
-        }
-    }
     turn = (turn + 1) % 2;
-    if(end==0){
-    document.addEventListener('click', onMouseClick, false);
-    }
-}
 
-if(turn==0){
-    computer_turn();
-}
+});
+let selectedCube;
+const raycaster = new THREE.Raycaster();
+
 function onMouseClick(event) {
-    let end;
-    end=0;
-    const raycaster = new THREE.Raycaster();
     let setColor;
-    setColor = 0xff0000;
+    if (turn == 0) {
+        setColor = 0x0000ff;
+    } else {
+        setColor = 0xff0000;
+    }
     const mouse = new THREE.Vector2(
         (event.clientX / window.innerWidth) * 2 - 1,
         -(event.clientY / window.innerHeight) * 2 + 1
@@ -312,7 +267,7 @@ function onMouseClick(event) {
     const intersects = raycaster.intersectObjects(cube);
 
     if (intersects.length > 0) {
-        const selectedCube = intersects[0].object;
+        selectedCube = intersects[0].object;
         if (cube_3d[selectedCube.position.x + 1][selectedCube.position.y + 1][selectedCube.position.z + 1] == '-') {
             cube_3d[selectedCube.position.x + 1][selectedCube.position.y + 1][selectedCube.position.z + 1] = turn;
             const newMaterial = new THREE.MeshLambertMaterial({ color: setColor });
@@ -332,11 +287,12 @@ function onMouseClick(event) {
                     const line = new THREE.Line(geometry, material);
                     scene.add(line);
                     document.removeEventListener('click', onMouseClick, false);
+                    document.getElementById('undo').disabled = true;
                     const winner=document.createElement('h1');
                     if(turn==0){
-                        winner.textContent="COMPUTER WON";
+                        winner.textContent="BLUE WON";
                     }else{
-                        winner.textContent="YOU WON";
+                        winner.textContent="RED WON";
                     }
                     const gameover =document.getElementsByClassName("gameover")[0];
                     gameover.appendChild(winner);
@@ -345,14 +301,11 @@ function onMouseClick(event) {
                         gameover.style.backgroundColor = "rgba(156, 159, 251, 0.5)";
 
                     }
-                    end=1;
+                     
                      
                 }
             }
             turn = (turn + 1) % 2;
-            if(end==0){
-            computer_turn();
-            }
         }
     }
 
@@ -363,7 +316,7 @@ function animate() {
     requestAnimationFrame(animate);
     controls.update()
     render();
-    stats.update();
+    // stats.update();
 }
 function render() {
 

@@ -42,6 +42,10 @@
             animation-duration: 1s;
             animation-iteration-count: infinite;
             visibility: hidden;
+     
+
+
+
         }
 
         .gameovervis {
@@ -55,19 +59,22 @@
                 transform: scale(1);
             }
 
+            /* Initial and final state: normal size */
             50% {
                 transform: scale(1.05);
             }
 
+            /* Middle state: slightly larger size */
         }
     </style>
 </head>
 
 <body>
-    <script type="module" src="/single_player_game.js"></script>
+    <script type="module" src="double_player_game.js"></script>
     <div id="menu">
         <button id="restart">RESTART</button>
         <button id="back_menu">MAIN MENU</button>
+        <button id="undo">UNDO</button>
     </div>
     <div class="gameover ">
     </div>
