@@ -234,7 +234,7 @@ buttonRestart.addEventListener('click', function () {
 });
 const buttonMenu = document.getElementById('back_menu');
 buttonMenu.addEventListener('click', function () {
-    window.location.href="/..";
+    window.location.href="/3d_tic_tac_toe/";
 
 });
 function computer_turn(){    //computer turn
