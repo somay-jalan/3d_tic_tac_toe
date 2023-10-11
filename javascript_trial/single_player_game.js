@@ -170,7 +170,7 @@ function check_3d_cube(cube_3d, turn) {
 }
 
 let turn;
-turn = 0;
+turn = Math.floor(Math.random() * 2);
 const controls = new OrbitControls(camera, renderer.domElement);
 var cube = [];
 var cube_3d = [];
@@ -237,26 +237,70 @@ buttonMenu.addEventListener('click', function () {
     window.location.href="/index.html";
 
 });
-const buttonUndo = document.getElementById('undo');
-buttonUndo.addEventListener('click', function () {
-    cube_3d[selectedCube.position.x + 1][selectedCube.position.y + 1][selectedCube.position.z + 1] = "-";
-    const newMaterial = new THREE.MeshLambertMaterial({ color: 0x00ffff });
+function computer_turn(){    //computer turn
+
+    let end,new_x,new_y,new_z;
+    end=0;
+    document.removeEventListener('click', onMouseClick, false);
+    while(true){
+        new_x=Math.floor(Math.random() * 3);
+        new_y=Math.floor(Math.random() * 3);
+        new_z=Math.floor(Math.random() * 3);
+        console.log(new_x,new_y,new_z);
+        if(cube_3d[new_x][new_y][new_z]=='-'){
+            break;
+        }
+    }
+    cube_3d[new_x][new_y][new_z]=turn;
+    const selectedCube=cube[new_x*9+new_y*3+new_z];
+    const newMaterial = new THREE.MeshLambertMaterial({ color: 0x0000ff });
     newMaterial.transparent = true;
     newMaterial.opacity = 0.5;
     selectedCube.material = newMaterial;
-    turn = (turn + 1) % 2;
+    const exists = (check_3d_cube(cube_3d, turn));
+    console.log(exists)
+    if (exists.length != 0) {
+        for (let i = 0; i < exists.length; i = i + 2) {
+            const material = new THREE.LineBasicMaterial({ color: 0x0000ff });
+            material.linewidth = 5;
+            const points = [];
+            points.push(new THREE.Vector3(exists[i][0] - 1, exists[i][1] - 1, exists[i][2] - 1));
+            points.push(new THREE.Vector3(exists[i + 1][0] - 1, exists[i + 1][1] - 1, exists[i + 1][2] - 1));
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const line = new THREE.Line(geometry, material);
+            scene.add(line);
+            document.removeEventListener('click', onMouseClick, false);
+            const winner=document.createElement('h1');
+            if(turn==0){
+                winner.textContent="COMPUTER WON";
+            }else{
+                winner.textContent="YOU WON";
+            }
+            const gameover =document.getElementsByClassName("gameover")[0];
+            gameover.appendChild(winner);
+            gameover.classList.add("gameovervis");
+            if(turn==0){
+                gameover.style.backgroundColor = "rgba(156, 159, 251, 0.5)";
 
-});
-let selectedCube;
-const raycaster = new THREE.Raycaster();
-
-function onMouseClick(event) {
-    let setColor;
-    if (turn == 0) {
-        setColor = 0x0000ff;
-    } else {
-        setColor = 0xff0000;
+            }
+            end=1;
+        }
     }
+    turn = (turn + 1) % 2;
+    if(end==0){
+    document.addEventListener('click', onMouseClick, false);
+    }
+}
+
+if(turn==0){
+    computer_turn();
+}
+function onMouseClick(event) {
+    let end;
+    end=0;
+    const raycaster = new THREE.Raycaster();
+    let setColor;
+    setColor = 0xff0000;
     const mouse = new THREE.Vector2(
         (event.clientX / window.innerWidth) * 2 - 1,
         -(event.clientY / window.innerHeight) * 2 + 1
@@ -268,7 +312,7 @@ function onMouseClick(event) {
     const intersects = raycaster.intersectObjects(cube);
 
     if (intersects.length > 0) {
-        selectedCube = intersects[0].object;
+        const selectedCube = intersects[0].object;
         if (cube_3d[selectedCube.position.x + 1][selectedCube.position.y + 1][selectedCube.position.z + 1] == '-') {
             cube_3d[selectedCube.position.x + 1][selectedCube.position.y + 1][selectedCube.position.z + 1] = turn;
             const newMaterial = new THREE.MeshLambertMaterial({ color: setColor });
@@ -288,12 +332,11 @@ function onMouseClick(event) {
                     const line = new THREE.Line(geometry, material);
                     scene.add(line);
                     document.removeEventListener('click', onMouseClick, false);
-                    document.getElementById('undo').disabled = true;
                     const winner=document.createElement('h1');
                     if(turn==0){
-                        winner.textContent="BLUE WON";
+                        winner.textContent="COMPUTER WON";
                     }else{
-                        winner.textContent="RED WON";
+                        winner.textContent="YOU WON";
                     }
                     const gameover =document.getElementsByClassName("gameover")[0];
                     gameover.appendChild(winner);
@@ -302,11 +345,14 @@ function onMouseClick(event) {
                         gameover.style.backgroundColor = "rgba(156, 159, 251, 0.5)";
 
                     }
-                     
+                    end=1;
                      
                 }
             }
             turn = (turn + 1) % 2;
+            if(end==0){
+            computer_turn();
+            }
         }
     }
 
