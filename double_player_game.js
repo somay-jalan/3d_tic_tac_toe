@@ -233,7 +233,7 @@ buttonRestart.addEventListener('click', function () {
 });
 const buttonMenu = document.getElementById('back_menu');
 buttonMenu.addEventListener('click', function () {
-    window.location.href="/index.html";
+    window.location.href="/..";
 
 });
 const buttonUndo = document.getElementById('undo');

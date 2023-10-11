@@ -234,7 +234,7 @@ buttonRestart.addEventListener('click', function () {
 });
 const buttonMenu = document.getElementById('back_menu');
 buttonMenu.addEventListener('click', function () {
-    window.location.href="/index.html";
+    window.location.href="/..";
 
 });
 function computer_turn(){    //computer turn
